@@ -128,11 +128,11 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-        }
-        .modal.active {
-            display: flex;
             align-items: center;
             justify-content: center;
+        }
+        .modal.active {
+            display: flex !important;
         }
         .modal-content {
             background-color: white;
@@ -263,15 +263,24 @@
         };
 
         const showApiModal = () => {
+            console.log('API 모달 열기'); // 디버깅용
             const modal = document.getElementById('api-modal');
             const input = document.getElementById('api-key-input');
-            input.value = apiKey;
-            modal.classList.add('active');
+            if (modal && input) {
+                input.value = apiKey;
+                modal.classList.add('active');
+                console.log('모달 클래스 추가됨'); // 디버깅용
+            } else {
+                console.error('모달 또는 입력 요소를 찾을 수 없습니다');
+            }
         };
 
         const hideApiModal = () => {
+            console.log('API 모달 닫기'); // 디버깅용
             const modal = document.getElementById('api-modal');
-            modal.classList.remove('active');
+            if (modal) {
+                modal.classList.remove('active');
+            }
         };
 
         const saveApiKey = () => {
@@ -282,6 +291,11 @@
                 apiKey = newApiKey;
                 localStorage.setItem('gemini-api-key', apiKey);
                 updateApiStatus();
+
+        // 디버깅: 요소들이 제대로 로드되었는지 확인
+        console.log('API 모달:', document.getElementById('api-modal'));
+        console.log('설정 버튼:', document.getElementById('configure-api'));
+        console.log('API 키:', apiKey);
                 hideApiModal();
                 alert('API 키가 저장되었습니다!');
             } else {
@@ -299,16 +313,30 @@
         };
 
         // 이벤트 리스너 등록
-        document.getElementById('configure-api').addEventListener('click', showApiModal);
-        document.getElementById('save-api-key').addEventListener('click', saveApiKey);
-        document.getElementById('close-modal').addEventListener('click', hideApiModal);
+        document.getElementById('configure-api').addEventListener('click', (e) => {
+            e.preventDefault();
+            showApiModal();
+        });
+        document.getElementById('save-api-key').addEventListener('click', (e) => {
+            e.preventDefault();
+            saveApiKey();
+        });
+        document.getElementById('close-modal').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideApiModal();
+        });
         document.getElementById('api-key-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') saveApiKey();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveApiKey();
+            }
         });
 
         // 모달 외부 클릭 시 닫기
         document.getElementById('api-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'api-modal') hideApiModal();
+            if (e.target.id === 'api-modal') {
+                hideApiModal();
+            }
         });
 
         updateApiStatus();
