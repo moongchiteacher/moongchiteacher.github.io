@@ -121,30 +121,30 @@
         }
 
         /* API 키 설정 모달 스타일 */
-        .modal {
-            display: none;
+        .api-modal {
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 9999;
+        }
+        .api-modal.show {
+            display: flex;
             align-items: center;
             justify-content: center;
         }
-        .modal.active {
-            display: flex !important;
-        }
-        .modal-content {
-            background-color: white;
+        .api-modal-content {
+            background: white;
             padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
             max-width: 500px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
         
         .api-status {
@@ -168,8 +168,8 @@
 <body class="antialiased">
 
     <!-- API 키 설정 모달 -->
-    <div id="api-modal" class="modal">
-        <div class="modal-content">
+    <div id="apiModal" class="api-modal">
+        <div class="api-modal-content">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">🔑 Gemini API 키 설정</h2>
             <p class="text-gray-600 mb-4 leading-relaxed">
                 AI 기능을 사용하려면 Google Gemini API 키가 필요합니다. 
@@ -186,13 +186,13 @@
             </div>
 
             <div class="mb-4">
-                <label for="api-key-input" class="block mb-2 text-sm font-medium text-gray-900">API 키 입력</label>
-                <input type="password" id="api-key-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500" placeholder="AIza...로 시작하는 API 키를 입력하세요">
+                <label for="apiKeyInput" class="block mb-2 text-sm font-medium text-gray-900">API 키 입력</label>
+                <input type="password" id="apiKeyInput" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500" placeholder="AIza...로 시작하는 API 키를 입력하세요">
             </div>
 
             <div class="flex gap-3">
-                <button id="save-api-key" class="flex-1 bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition">저장</button>
-                <button id="close-modal" class="flex-1 bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition">취소</button>
+                <button id="saveApiKey" class="flex-1 bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition">저장</button>
+                <button id="closeModal" class="flex-1 bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition">취소</button>
             </div>
 
             <div class="mt-4 text-xs text-gray-500">
@@ -209,10 +209,10 @@
             <!-- API 키 상태 표시 -->
             <div class="mt-6 flex justify-center">
                 <div class="flex items-center gap-3">
-                    <span id="api-status" class="api-status not-configured">
+                    <span id="apiStatus" class="api-status not-configured">
                         🔑 AI 기능을 위해 API 키가 필요합니다
                     </span>
-                    <button id="configure-api" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm">
+                    <button id="configureApi" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm">
                         API 키 설정
                     </button>
                 </div>
@@ -293,11 +293,6 @@
                 apiKey = newApiKey;
                 localStorage.setItem('gemini-api-key', apiKey);
                 updateApiStatus();
-
-        // 디버깅: 요소들이 제대로 로드되었는지 확인
-        console.log('API 모달:', document.getElementById('api-modal'));
-        console.log('설정 버튼:', document.getElementById('configure-api'));
-        console.log('API 키:', apiKey);
                 hideApiModal();
                 alert('API 키가 저장되었습니다!');
             } else {
@@ -315,28 +310,18 @@
         };
 
         // 이벤트 리스너 등록
-        document.getElementById('configure-api').addEventListener('click', (e) => {
-            e.preventDefault();
-            showApiModal();
-        });
-        document.getElementById('save-api-key').addEventListener('click', (e) => {
-            e.preventDefault();
-            saveApiKey();
-        });
-        document.getElementById('close-modal').addEventListener('click', (e) => {
-            e.preventDefault();
-            hideApiModal();
-        });
-        document.getElementById('api-key-input').addEventListener('keypress', (e) => {
+        document.getElementById('configureApi').addEventListener('click', showApiModal);
+        document.getElementById('saveApiKey').addEventListener('click', saveApiKey);
+        document.getElementById('closeModal').addEventListener('click', hideApiModal);
+        document.getElementById('apiKeyInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault();
                 saveApiKey();
             }
         });
 
         // 모달 외부 클릭 시 닫기
-        document.getElementById('api-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'api-modal') {
+        document.getElementById('apiModal').addEventListener('click', (e) => {
+            if (e.target.id === 'apiModal') {
                 hideApiModal();
             }
         });
